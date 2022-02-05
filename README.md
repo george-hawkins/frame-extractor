@@ -98,3 +98,22 @@ $ ./repack.py 'frames/*.png'
 usage: repack.py [-h] --frame-rate FRAME_RATE --output OUTPUT frames_glob
 repack.py: error: the following arguments are required: --frame-rate, --output
 ```
+
+Blender and frame 0 or 1
+------------------------
+
+Blender seems a bit schizophrenic when it comes to whether things start at frame 0 or 1.
+
+Go to _New / Video Editing_ and in the lower _Video Sequencer_ - the playhead weirdly is set to 00:00+01 rather than 00:00+00 and if you untick _View / Show Seconds_, it's clear that this point in time is frame 1 (and that you can move the playhead back to 0).
+
+I suppose you _could_ think of the playhead seconds as indicating the end time of the current frame but then I'd have shown it either as a rectangle (rather than a line) that's covers the portion of time covered by the frame or I'd have put the line at the end (or possibly the middle) of rectangle that represents the current frame.
+
+If you go to _Add / Movie_ and select a clip and then the _Start_ frame stays as 1 and if you select _View / Range / Set Frame Range to Clips_ then _End_ frame is set to the count of frames in your clip.
+
+If you then select the clip (or clips if there's also a separately represented audio track) and drag them back two frames the you might expect _Start_ to either go to -1 or stay at 1 (i.e. the first two frames become ignored) if you select _Set Frame Range to Clips_ again but actually _Start_ goes to 0, i.e. decreases by one one frame, but _End_ decreases by 2 frames.
+
+I.e. your video has only become 1 frame shorter despite shifting it back two frames over the apparent start point.
+
+Now, if you press left _Jump to Endpoint_ button then you jump to 0. Whereas previous, it would have jumped to 1. So it's at least consistent with the current _Start_ value.
+
+If you ask it to render a frame range, e.g. 20 to 30 then the resulting files file end up numbered `0020.png` to `0030.png`, i.e. their names reflect their frame number as shown on the Blender playhead. If you e.g. slid things such the sixth frame of your video is now frame 1 and specify the range 1 to 10 then this sixth frame will be output as `0001.png`.
